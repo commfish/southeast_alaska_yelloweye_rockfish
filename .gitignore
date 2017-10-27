@@ -5,4 +5,4 @@
 fishery
 *.Rproj
 *.gitmodules
-*.wiki
+*wiki
