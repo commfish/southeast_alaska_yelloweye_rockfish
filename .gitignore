@@ -6,3 +6,4 @@ fishery
 *.Rproj
 *.gitmodules
 *wiki
+*.html
