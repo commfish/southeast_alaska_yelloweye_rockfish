@@ -69,7 +69,25 @@ age_error <- read.csv('data/raw/fishery/age_error_1995_2014.csv')
 age_error %>% 
 	dplyr::select(age = AGE, Read = READABILITY_CODE, true = RELEASE_AUTHORITATIVE,
 					  Sample = SAMPLE_ID, specimen = SPECIMEN_ID, Sex = GENDER_CODE) %>% 
-	filter(!is.na(age), !Read %in% c("MO", "NO"), age<=75) %>% 
+	filter(!is.na(age), !Read %in% c("MO", "NO"), age<=75) %>%  
+	mutate(id = paste0(Sample, "_", specimen)) %>% 
+	dplyr::select(age, Read, true, id) -> age_error
+
+age_error %>% 
+	filter(true==1) -> true
+
+age_error %>% 
+	filter(true==0) %>% 
+	dplyr::select(read_age = age, id) -> read
+
+true %>% 
+	left_join(read) %>% 
+	drop_na %>% 
+	mutate(n = 1) %>% 
+	complete(age, read_age, fill = list(n = 0)) %>% 
+	dplyr::select(age, read_age, n) %>% 
+	group_by(age, read_age) %>% 
+	summarise(n = sum(n)) %>% 
 	write_csv("data/fishery/age_error.csv")
 	
 
